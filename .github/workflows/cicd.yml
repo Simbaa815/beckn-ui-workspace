@@ -16,7 +16,7 @@ jobs:
         run: yarn install
 
       - name: Build application
-        run: yarn build
+        run: yarn build:osm
 
       - name: Run automated tests
         run: yarn test
