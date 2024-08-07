@@ -1,0 +1,28 @@
+name: Beckn-ui-workspace Sandbox CICD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build application
+        run: yarn build
+
+      - name: Run automated tests
+        run: yarn test
+
+      # - name: Deploy to Sandbox
+       # uses: deploy-to-sandbox@v1
+       # with:
+       #   api-key: ${{ secrets.SANDBOX_API_KEY }}
+       #   environment: sandbox
