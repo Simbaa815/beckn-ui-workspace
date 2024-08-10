@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                git 'https://github.com/your-repo/your-project.git'
+                echo "build step"
             }
         }
 
