@@ -2,10 +2,15 @@ pipeline {
     agent any
 
     stages {
-        stage('Hello World') {
+        stage('Build') {
             steps {
-                echo 'Hello World!'
+                git 'https://github.com/your-repo/your-project.git'
             }
         }
-    }
-}
+
+        stage('Test') {
+            steps {
+                echo "this is test stage"
+            }
+        }
+
