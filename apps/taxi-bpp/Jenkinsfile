@@ -1,0 +1,77 @@
+pipeline {
+    agent any
+
+    environment {
+        NODEJS_VERSION = '18'
+        DEPLOY_SERVER = 'user@server'
+        DEPLOY_DIR = '/path/to/project'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-repo/taxi-bpp.git'
+            }
+        }
+
+        stage('Set up Node.js and Yarn') {
+            steps {
+                script {
+                    def nodeVersion = sh(script: "node -v", returnStdout: true).trim()
+                    if (!nodeVersion.contains(NODEJS_VERSION)) {
+                        sh "nvm install ${NODEJS_VERSION}"
+                        sh "nvm use ${NODEJS_VERSION}"
+                    }
+                    sh 'npm install -g yarn'  // Install Yarn globally
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'yarn install'
+            }
+        }
+
+        stage('Build Project') {
+            steps {
+                sh 'yarn build'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'yarn test'  // Assuming there is a test script in package.json
+            }
+        }
+
+        stage('Deploy to Server') {
+            steps {
+                sshagent(['your-ssh-key-id']) {
+                    sh """
+                    ssh ${DEPLOY_SERVER} '
+                    cd ${DEPLOY_DIR} &&
+                    git pull origin main &&
+                    yarn install &&
+                    yarn build &&
+                    pm2 restart app
+                    '
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
+
